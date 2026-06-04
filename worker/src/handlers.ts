@@ -15,8 +15,3 @@ export function getHandler(type: string): JobHandler {
   if (!handler) throw new Error(`Tipo de job sin handler: ${type}`);
   return handler;
 }
-
-// Handler de prueba de Fase 0: solo registra que se ejecutó. Se quitará en Fase 1.
-registerHandler("noop", async () => {
-  console.log("[worker] job noop procesado");
-});

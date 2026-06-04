@@ -1,6 +1,6 @@
 import { config } from "./config.js";
 import { runLoop } from "./loop.js";
-import "./handlers.js"; // registra los handlers
+import "./investigate.js"; // registra el handler investigate
 
 console.log("[worker] michis worker iniciado (latido)");
 runLoop(config.pollIntervalMs).catch((err) => {
