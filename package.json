@@ -1,0 +1,13 @@
+{
+  "name": "michis",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db",
+    "worker:dev": "pnpm --filter worker dev",
+    "web:dev": "pnpm --filter web dev",
+    "test": "pnpm -r test"
+  }
+}
