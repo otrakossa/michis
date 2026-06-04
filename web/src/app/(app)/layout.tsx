@@ -14,7 +14,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-neutral-800 p-4">
-        <span className="font-semibold">michis</span>
+        <nav className="flex items-center gap-4">
+          <span className="font-semibold">michis</span>
+          <a href="/casos" className="text-sm text-neutral-300 hover:text-white">Casos</a>
+        </nav>
         <span className="text-sm text-neutral-400">
           {profile?.display_name ?? user.email} · {role}
         </span>
