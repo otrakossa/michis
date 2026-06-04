@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { supabase } from "../src/supabase.js";
 import { claimNextJob, completeJob, failJob } from "../src/jobs.js";
+import { tick } from "../src/loop.js";
+import { registerHandler } from "../src/handlers.js";
 
 describe("cola de jobs", () => {
   beforeEach(async () => {
@@ -35,5 +37,30 @@ describe("cola de jobs", () => {
     const { data } = await supabase.from("jobs").select("status,last_error").eq("id", job!.id).single();
     expect(data!.status).toBe("failed");
     expect(data!.last_error).toBe("boom");
+  });
+});
+
+describe("tick", () => {
+  beforeEach(async () => {
+    await supabase.from("jobs").delete().eq("type", "e2e");
+  });
+
+  it("procesa un job con handler registrado y lo deja done", async () => {
+    let ran = false;
+    registerHandler("e2e", async () => { ran = true; });
+    const { data: inserted } = await supabase
+      .from("jobs").insert({ type: "e2e", payload: {} }).select("id").single();
+
+    // Procesa hasta que nuestro job e2e quede done (la cola puede tener otros jobs).
+    for (let i = 0; i < 15; i++) {
+      const { data } = await supabase.from("jobs").select("status").eq("id", inserted!.id).single();
+      if (data!.status === "done") break;
+      const processed = await tick();
+      if (!processed) break;
+    }
+
+    const { data } = await supabase.from("jobs").select("status").eq("id", inserted!.id).single();
+    expect(data!.status).toBe("done");
+    expect(ran).toBe(true);
   });
 });
