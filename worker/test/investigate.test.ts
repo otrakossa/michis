@@ -1,7 +1,7 @@
+// Este archivo prueba el camino SIN clave (stub). El camino con agente está en investigateAgent.test.ts.
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { supabase as svc } from "../src/supabase.js";
-import { tick } from "../src/loop.js";
-import "../src/investigate.js"; // registra el handler
+import { runInvestigation } from "../src/investigate.js";
 
 const EMAIL = "test-investigate@example.com";
 let userId: string;
@@ -33,11 +33,6 @@ beforeAll(async () => {
     .from("investigation_runs").insert({ case_id: caseId, status: "queued" })
     .select("id").single();
   runId = r!.id;
-
-  await svc.from("jobs").insert({
-    type: "investigate",
-    payload: { run_id: runId, case_id: caseId },
-  });
 });
 
 afterAll(async () => {
@@ -47,14 +42,7 @@ afterAll(async () => {
 
 describe("handler investigate (stub)", () => {
   it("procesa el job: run needs_review + step de auditoría + caso needs_review", async () => {
-    // la cola puede tener otros jobs: tickear hasta que el nuestro termine
-    for (let i = 0; i < 15; i++) {
-      const { data } = await svc
-        .from("investigation_runs").select("status").eq("id", runId).single();
-      if (data!.status === "needs_review") break;
-      const processed = await tick();
-      if (!processed) break;
-    }
+    await runInvestigation({ run_id: runId, case_id: caseId }, { llm: null });
 
     const { data: run } = await svc
       .from("investigation_runs")
