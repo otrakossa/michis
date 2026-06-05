@@ -18,23 +18,23 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen">
-      <header className="flex items-center justify-between border-b border-neutral-800 p-4">
+      <header className="flex items-center justify-between border-b border-stone-700 bg-stone-800 p-4">
         <nav className="flex items-center gap-4">
-          <span className="font-semibold">michis</span>
-          <a href="/casos" className="text-sm text-neutral-300 hover:text-white">Casos</a>
-          <a href="/campanias" className="text-sm text-neutral-300 hover:text-white">
+          <span className="font-extrabold">🐱 michis</span>
+          <a href="/casos" className="text-sm text-stone-300 hover:text-orange-400">Casos</a>
+          <a href="/campanias" className="text-sm text-stone-300 hover:text-orange-400">
             Campañas
             {(campActivas ?? 0) > 0 && (
-              <span className="ml-1 rounded-full bg-emerald-600 px-1.5 text-xs font-medium">
+              <span className="badge-accion ml-1">
                 {campActivas}
               </span>
             )}
           </a>
           {role === "admin" && (
-            <a href="/expedientes" className="text-sm text-neutral-300 hover:text-white">Expedientes</a>
+            <a href="/expedientes" className="text-sm text-stone-300 hover:text-orange-400">Expedientes</a>
           )}
         </nav>
-        <span className="text-sm text-neutral-400">
+        <span className="text-sm text-stone-400">
           {profile?.display_name ?? user.email} · {role}
         </span>
       </header>

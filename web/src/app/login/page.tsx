@@ -24,19 +24,20 @@ export default function LoginPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 p-6">
-      <h1 className="text-2xl font-semibold">michis</h1>
+      <h1 className="text-center text-3xl font-extrabold">🐱 michis</h1>
+      <p className="text-center text-sm text-stone-400">investigación y denuncia coordinada de bots</p>
       <form onSubmit={onSubmit} className="flex flex-col gap-3">
         <input
           type="email" placeholder="Email" value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded bg-neutral-900 p-2"
+          className="rounded-xl bg-stone-800 p-3"
         />
         <input
           type="password" placeholder="Contraseña" value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="rounded bg-neutral-900 p-2"
+          className="rounded-xl bg-stone-800 p-3"
         />
-        <button type="submit" className="rounded bg-emerald-600 p-2 font-medium">
+        <button type="submit" className="btn-primary">
           Entrar
         </button>
         {error && <p className="text-sm text-red-400">{error}</p>}
