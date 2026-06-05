@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { RoleGate, type Role } from "@/components/RoleGate";
 import { InvestigateButton } from "@/components/InvestigateButton";
 import { DeleteCaseButton } from "@/components/DeleteCaseButton";
+import { VerdictView, type VerdictData } from "@/components/VerdictView";
 
 export default async function CasoDetallePage({
   params,
@@ -53,6 +54,13 @@ export default async function CasoDetallePage({
       )}
 
       <InvestigateButton caseId={caso.id} />
+
+      {runs && runs.length > 0 && runs[0].verdict != null && (
+        <div>
+          <h2 className="mb-2 text-sm font-medium text-neutral-400">Veredicto del agente</h2>
+          <VerdictView verdict={runs[0].verdict as VerdictData} />
+        </div>
+      )}
 
       <div>
         <h2 className="mb-2 text-sm font-medium text-neutral-400">Investigaciones</h2>
