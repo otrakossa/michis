@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .card { @apply rounded-xl bg-stone-800 p-4; }
+  .btn-primary { @apply rounded-xl bg-amber-500 px-4 py-2 text-sm font-bold text-stone-900 disabled:opacity-50; }
+  .btn-ghost { @apply rounded-xl bg-stone-700 px-4 py-2 text-sm text-stone-200 disabled:opacity-50; }
+  .btn-danger { @apply rounded-xl border border-red-900 px-4 py-2 text-sm text-red-400; }
+  .chip { @apply rounded-full bg-stone-900 px-3 py-1 text-xs text-stone-200; }
+  .badge-accion { @apply rounded-full bg-amber-500 px-2 py-0.5 text-xs font-extrabold text-stone-900; }
+}
