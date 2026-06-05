@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { CampaignProgress } from "@/components/CampaignProgress";
+import { EmptyState } from "@/components/EmptyState";
 
 interface CampaignRow {
   id: string;
@@ -37,7 +38,13 @@ export default async function CampaniasPage() {
             </li>
           ))}
           {activas.length === 0 && (
-            <li className="text-neutral-500">No hay campañas activas.</li>
+            <li>
+              <EmptyState
+                emoji="📢"
+                titulo="No hay campañas activas"
+                texto="Las campañas de denuncia aparecerán aquí cuando se activen desde un expediente."
+              />
+            </li>
           )}
         </ul>
       </div>

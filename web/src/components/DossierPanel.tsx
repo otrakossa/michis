@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { ESTADO_DOSSIER, etiquetaEstado } from "@/lib/estados";
+import { MiniMarkdown } from "@/components/MiniMarkdown";
+import { StatusPill } from "@/components/StatusPill";
 
 export interface DossierData {
   id: string;
@@ -53,9 +54,7 @@ export function DossierPanel({ dossier }: { dossier: DossierData }) {
         <h2 className="text-sm font-medium text-stone-400">
           Expediente · v{dossier.version}
         </h2>
-        <span className="chip">
-          {etiquetaEstado(ESTADO_DOSSIER, dossier.status)}
-        </span>
+        <StatusPill mapa="dossier" estado={dossier.status} />
       </div>
 
       {editable ? (
@@ -79,9 +78,7 @@ export function DossierPanel({ dossier }: { dossier: DossierData }) {
           </div>
         </>
       ) : (
-        <pre className="whitespace-pre-wrap rounded-xl bg-stone-900 p-3 font-mono text-sm">
-          {dossier.content.resumen ?? ""}
-        </pre>
+        <MiniMarkdown text={dossier.content.resumen ?? ""} />
       )}
     </div>
   );

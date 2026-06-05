@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ResolveButtons } from "@/components/ResolveButtons";
+import { EmptyState } from "@/components/EmptyState";
 
 export default async function ExpedientesPage() {
   const supabase = await createClient();
@@ -41,7 +42,13 @@ export default async function ExpedientesPage() {
           );
         })}
         {(dossiers ?? []).length === 0 && (
-          <li className="text-neutral-500">No hay expedientes pendientes de revisión.</li>
+          <li>
+            <EmptyState
+              emoji="📂"
+              titulo="Sin expedientes pendientes"
+              texto="No hay expedientes esperando revisión en este momento."
+            />
+          </li>
         )}
       </ul>
     </section>
