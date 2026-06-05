@@ -68,7 +68,7 @@ export default function CasoNuevoPage() {
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value as "twitter" | "tiktok")}
-          className="rounded bg-neutral-900 p-2"
+          className="rounded-xl bg-stone-800 p-3"
         >
           <option value="twitter">X / Twitter</option>
           <option value="tiktok">TikTok</option>
@@ -77,25 +77,25 @@ export default function CasoNuevoPage() {
           placeholder="@handle"
           value={handle}
           onChange={(e) => setHandle(e.target.value)}
-          className="rounded bg-neutral-900 p-2 font-mono"
+          className="rounded-xl bg-stone-800 p-3 font-mono"
         />
         <textarea
           placeholder="Notas: ¿por qué te parece sospechosa esta cuenta?"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={4}
-          className="rounded bg-neutral-900 p-2"
+          className="rounded-xl bg-stone-800 p-3"
         />
         <button
           type="submit"
           disabled={sending}
-          className="rounded bg-emerald-600 p-2 font-medium disabled:opacity-50"
+          className="btn-primary"
         >
           Crear caso
         </button>
         {error && <p className="text-sm text-red-400">{error}</p>}
         {dupId && (
-          <p className="text-sm text-amber-400">
+          <p className="text-sm text-orange-400">
             Ya existe un caso para esa cuenta.{" "}
             <a href={`/casos/${dupId}`} className="underline">Ver caso existente →</a>
           </p>
