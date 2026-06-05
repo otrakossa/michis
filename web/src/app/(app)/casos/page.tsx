@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { ESTADO_CASO, etiquetaEstado } from "@/lib/estados";
 
 const ESTADOS = ["nuevo", "investigando", "needs_review", "confirmado", "descartado"] as const;
 
@@ -24,22 +25,25 @@ export default async function CasosPage({
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Casos</h1>
-        <Link href="/casos/nuevo" className="rounded bg-emerald-600 px-3 py-2 text-sm font-medium">
+        <Link href="/casos/nuevo" className="btn-primary">
           + Nuevo caso
         </Link>
       </div>
 
       <nav className="flex flex-wrap gap-2 text-sm">
-        <Link href="/casos" className={!estado ? "text-emerald-400" : "text-neutral-400"}>
+        <Link
+          href="/casos"
+          className={!estado ? "chip !bg-amber-500 !text-stone-900 font-bold" : "chip"}
+        >
           todos
         </Link>
         {ESTADOS.map((e) => (
           <Link
             key={e}
             href={`/casos?estado=${e}`}
-            className={estado === e ? "text-emerald-400" : "text-neutral-400"}
+            className={estado === e ? "chip !bg-amber-500 !text-stone-900 font-bold" : "chip"}
           >
-            {e}
+            {etiquetaEstado(ESTADO_CASO, e)}
           </Link>
         ))}
       </nav>
@@ -49,17 +53,17 @@ export default async function CasosPage({
           <li key={c.id}>
             <Link
               href={`/casos/${c.id}`}
-              className="flex items-center justify-between rounded border border-neutral-800 p-3 hover:border-neutral-600"
+              className="card flex items-center justify-between hover:ring-1 hover:ring-amber-500/50"
             >
               <span className="font-mono">@{c.handle}</span>
-              <span className="text-sm text-neutral-400">
-                {c.platform} · {c.status}
+              <span className="text-sm text-stone-400">
+                {c.platform} · {etiquetaEstado(ESTADO_CASO, c.status)}
               </span>
             </Link>
           </li>
         ))}
         {(casos ?? []).length === 0 && (
-          <li className="text-neutral-500">No hay casos{estado ? ` en estado "${estado}"` : ""}.</li>
+          <li className="text-stone-500">No hay casos{estado ? ` en estado "${estado}"` : ""}.</li>
         )}
       </ul>
     </section>

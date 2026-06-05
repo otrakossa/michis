@@ -22,7 +22,7 @@ export function CerrarCampaniaButton({ campaignId }: { campaignId: string }) {
   return (
     <div className="flex items-center gap-2">
       <button onClick={onClick}
-        className="rounded border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300">
+        className="btn-ghost">
         Cerrar campaña
       </button>
       {msg && <span className="text-xs text-red-400">{msg}</span>}

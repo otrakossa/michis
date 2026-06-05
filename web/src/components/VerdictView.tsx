@@ -1,3 +1,5 @@
+import { fraseVeredicto } from "@/lib/estados";
+
 export interface VerdictData {
   score?: number;
   confianza?: string;
@@ -9,61 +11,67 @@ export interface VerdictData {
   summary?: string;
 }
 
+function pesoDots(peso: number): string {
+  const p = Math.max(0, Math.min(5, Math.round(peso)));
+  return "●".repeat(p) + "○".repeat(5 - p);
+}
+
 export function VerdictView({ verdict }: { verdict: VerdictData }) {
   if (verdict.stub || verdict.score == null) {
-    return <p className="text-neutral-500">Sin veredicto del agente todavía.</p>;
+    return <p className="text-stone-400">Sin veredicto del agente todavía.</p>;
   }
-  const color =
-    verdict.score > 70 ? "text-red-400" : verdict.score >= 40 ? "text-amber-400" : "text-emerald-400";
+  const score = verdict.score;
+  const color = score > 70 ? "#f87171" : score >= 40 ? "#f59e0b" : "#4ade80";
 
   return (
-    <div className="flex flex-col gap-3 rounded border border-neutral-800 p-4">
+    <div className="card flex flex-col gap-4">
       <div className="flex items-center gap-4">
-        <span className={`text-4xl font-bold ${color}`}>{verdict.score}</span>
-        <div className="text-sm text-neutral-400">
-          <p>probabilidad de cuenta sintética</p>
-          <p>confianza: {verdict.confianza}</p>
+        <div
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full"
+          style={{ background: `conic-gradient(${color} 0% ${score}%, #44403c ${score}% 100%)` }}
+        >
+          <div
+            className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-stone-800 text-xl font-extrabold"
+            style={{ color }}
+          >
+            {score}
+          </div>
         </div>
-        <div className="ml-auto flex gap-2 text-xs">
+        <div>
+          <p className="font-bold">{fraseVeredicto(score)}</p>
+          <p className="text-sm text-stone-400">confianza: {verdict.confianza}</p>
+        </div>
+        <div className="ml-auto flex flex-col items-end gap-1">
           {verdict.modo_degradado && (
-            <span className="rounded bg-amber-950 px-2 py-1 text-amber-400">modo degradado</span>
+            <span className="rounded-full bg-amber-950 px-2 py-0.5 text-xs text-orange-400">modo degradado</span>
           )}
           {verdict.parcial && (
-            <span className="rounded bg-red-950 px-2 py-1 text-red-400">parcial</span>
+            <span className="rounded-full bg-red-950 px-2 py-0.5 text-xs text-red-400">parcial</span>
           )}
         </div>
       </div>
 
       {(verdict.senales ?? []).length > 0 && (
-        <table className="text-sm">
-          <thead>
-            <tr className="text-left text-neutral-500">
-              <th className="pr-4">Señal</th><th className="pr-4">Descripción</th><th>Peso</th>
-            </tr>
-          </thead>
-          <tbody>
-            {verdict.senales!.map((s, i) => (
-              <tr key={i} className="border-t border-neutral-800">
-                <td className="pr-4 font-mono">{s.tipo}</td>
-                <td className="pr-4 text-neutral-300">{s.descripcion}</td>
-                <td>{s.peso}/5</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="flex flex-wrap gap-2">
+          {verdict.senales!.map((s, i) => (
+            <span key={i} className="chip">
+              {s.tipo.replace(/_/g, " ")} · {s.descripcion}{" "}
+              <b style={{ color: s.peso >= 4 ? "#f87171" : "#fb923c" }}>{pesoDots(s.peso)}</b>
+            </span>
+          ))}
+        </div>
       )}
 
       {(verdict.cuentas_vinculadas ?? []).length > 0 && (
         <div className="text-sm">
-          <h3 className="mb-1 text-neutral-500">Cuentas posiblemente vinculadas</h3>
-          <ul className="flex flex-col gap-1">
+          <h3 className="mb-1 text-stone-400">Cuentas posiblemente vinculadas</h3>
+          <div className="flex flex-wrap gap-2">
             {verdict.cuentas_vinculadas!.map((c, i) => (
-              <li key={i}>
-                <span className="font-mono">@{c.handle}</span>
-                <span className="text-neutral-400"> · {c.relacion} · {c.razon}</span>
-              </li>
+              <span key={i} className="chip font-mono">
+                @{c.handle} <span className="font-sans text-stone-400">· {c.relacion.replace(/_/g, " ")} · {c.razon}</span>
+              </span>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </div>

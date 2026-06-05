@@ -7,6 +7,7 @@ import { DeleteCaseButton } from "@/components/DeleteCaseButton";
 import { VerdictView, type VerdictData } from "@/components/VerdictView";
 import { DossierPanel, type DossierData } from "@/components/DossierPanel";
 import { ActivateCampaignButton } from "@/components/ActivateCampaignButton";
+import { ESTADO_CASO, ESTADO_RUN, etiquetaEstado } from "@/lib/estados";
 
 export default async function CasoDetallePage({
   params,
@@ -48,10 +49,11 @@ export default async function CasoDetallePage({
     <section className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-mono text-xl font-semibold">@{caso.handle}</h1>
-          <p className="text-sm text-neutral-400">
-            {caso.platform} · estado: {caso.status} ·{" "}
-            {new Date(caso.created_at).toLocaleDateString("es")}
+          <h1 className="text-2xl font-extrabold font-mono">@{caso.handle}</h1>
+          <p className="text-sm text-stone-400">
+            {caso.platform} ·{" "}
+            <span className="text-orange-400 font-semibold">{etiquetaEstado(ESTADO_CASO, caso.status)}</span>
+            {" "}· {new Date(caso.created_at).toLocaleDateString("es")}
           </p>
         </div>
         <RoleGate role={role} allow={["admin"]}>
@@ -60,8 +62,8 @@ export default async function CasoDetallePage({
       </div>
 
       {caso.notes && (
-        <div className="rounded border border-neutral-800 p-3">
-          <h2 className="mb-1 text-sm font-medium text-neutral-400">Notas</h2>
+        <div className="card">
+          <h2 className="mb-1 text-sm font-medium text-stone-400">Notas</h2>
           <p className="whitespace-pre-wrap">{caso.notes}</p>
         </div>
       )}
@@ -80,7 +82,7 @@ export default async function CasoDetallePage({
       {caso.status === "confirmado" &&
         (activeCampaign ? (
           <Link href={`/campanias/${activeCampaign.id}`}
-            className="w-fit rounded border border-emerald-800 px-3 py-2 text-sm text-emerald-400">
+            className="btn-ghost w-fit">
             📢 Ver campaña activa →
           </Link>
         ) : (
@@ -90,23 +92,23 @@ export default async function CasoDetallePage({
         ))}
 
       <div>
-        <h2 className="mb-2 text-sm font-medium text-neutral-400">Investigaciones</h2>
+        <h2 className="mb-2 text-sm font-medium text-stone-400">Investigaciones</h2>
         <ul className="flex flex-col gap-2">
           {(runs ?? []).map((r) => (
-            <li key={r.id} className="rounded border border-neutral-800 p-3 text-sm">
-              <span className="font-medium">{r.status}</span>
-              <span className="text-neutral-400">
+            <li key={r.id} className="card text-sm">
+              <span className="font-medium">{etiquetaEstado(ESTADO_RUN, r.status)}</span>
+              <span className="text-stone-400">
                 {" "}· {new Date(r.created_at).toLocaleString("es")}
               </span>
               {r.verdict != null && (
-                <p className="mt-1 text-neutral-400">
+                <p className="mt-1 text-stone-400">
                   {(r.verdict as { summary?: string }).summary ?? ""}
                 </p>
               )}
             </li>
           ))}
           {(runs ?? []).length === 0 && (
-            <li className="text-neutral-500">Sin investigaciones todavía.</li>
+            <li className="text-stone-500">Sin investigaciones todavía.</li>
           )}
         </ul>
       </div>

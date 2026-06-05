@@ -50,8 +50,8 @@ export default async function CampaniaDetallePage({
       </div>
 
       {camp.instructions && (
-        <div className="rounded border border-neutral-800 p-3">
-          <h2 className="mb-1 text-sm font-medium text-neutral-400">Instrucciones</h2>
+        <div className="card">
+          <h2 className="mb-1 text-sm font-medium text-stone-400">Instrucciones</h2>
           <p className="whitespace-pre-wrap text-sm">{camp.instructions}</p>
         </div>
       )}
@@ -66,7 +66,7 @@ export default async function CampaniaDetallePage({
             const safeUrl = url && /^https?:\/\//i.test(url) ? url : null;
             return safeUrl ? (
               <a href={safeUrl} target="_blank" rel="noopener noreferrer"
-                className="w-fit rounded border border-neutral-700 px-4 py-2 text-sm">
+                className="btn-ghost w-fit">
                 🔗 Abrir mecanismo de reporte
               </a>
             ) : null;

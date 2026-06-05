@@ -32,11 +32,11 @@ export function InvestigateButton({ caseId }: { caseId: string }) {
       <button
         onClick={onClick}
         disabled={busy}
-        className="rounded bg-emerald-600 px-3 py-2 text-sm font-medium disabled:opacity-50"
+        className="btn-primary"
       >
         ▶ Investigar
       </button>
-      {msg && <span className="text-sm text-neutral-400">{msg}</span>}
+      {msg && <span className="text-sm text-stone-400">{msg}</span>}
     </div>
   );
 }

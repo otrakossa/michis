@@ -26,7 +26,7 @@ export default async function CampaniasPage() {
         <h1 className="mb-3 text-xl font-semibold">Campañas activas</h1>
         <ul className="flex flex-col gap-3">
           {activas.map((c) => (
-            <li key={c.id} className="rounded border border-emerald-900 p-3">
+            <li key={c.id} className="card ring-1 ring-amber-500/40">
               <Link href={`/campanias/${c.id}`} className="font-mono underline">
                 @{c.case.handle}
               </Link>
@@ -47,7 +47,7 @@ export default async function CampaniasPage() {
           <h2 className="mb-3 text-sm font-medium text-neutral-400">Cerradas</h2>
           <ul className="flex flex-col gap-2 text-sm">
             {cerradas.map((c) => (
-              <li key={c.id} className="rounded border border-neutral-800 p-3">
+              <li key={c.id} className="card opacity-70">
                 <Link href={`/campanias/${c.id}`} className="font-mono underline">
                   @{c.case.handle}
                 </Link>

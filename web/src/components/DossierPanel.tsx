@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ESTADO_DOSSIER, etiquetaEstado } from "@/lib/estados";
 
 export interface DossierData {
   id: string;
@@ -11,12 +12,6 @@ export interface DossierData {
   content: { resumen?: string } & Record<string, unknown>;
   submitted_at: string | null;
 }
-
-const STATUS_LABEL: Record<DossierData["status"], string> = {
-  draft: "borrador",
-  listo_admin: "pendiente de admin",
-  approved: "aprobado",
-};
 
 export function DossierPanel({ dossier }: { dossier: DossierData }) {
   const router = useRouter();
@@ -53,13 +48,13 @@ export function DossierPanel({ dossier }: { dossier: DossierData }) {
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded border border-neutral-800 p-4">
+    <div className="card flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-medium text-neutral-400">
+        <h2 className="text-sm font-medium text-stone-400">
           Expediente · v{dossier.version}
         </h2>
-        <span className="rounded bg-neutral-900 px-2 py-1 text-xs text-neutral-300">
-          {STATUS_LABEL[dossier.status]}
+        <span className="chip">
+          {etiquetaEstado(ESTADO_DOSSIER, dossier.status)}
         </span>
       </div>
 
@@ -69,22 +64,22 @@ export function DossierPanel({ dossier }: { dossier: DossierData }) {
             value={resumen}
             onChange={(e) => setResumen(e.target.value)}
             rows={10}
-            className="rounded bg-neutral-900 p-2 font-mono text-sm"
+            className="rounded-xl bg-stone-900 p-3 font-mono text-sm"
           />
           <div className="flex items-center gap-3">
             <button onClick={guardar} disabled={busy}
-              className="rounded border border-neutral-700 px-3 py-2 text-sm disabled:opacity-50">
+              className="btn-ghost">
               Guardar
             </button>
             <button onClick={elevar} disabled={busy}
-              className="rounded bg-emerald-600 px-3 py-2 text-sm font-medium disabled:opacity-50">
+              className="btn-primary">
               Elevar al admin
             </button>
-            {msg && <span className="text-sm text-neutral-400">{msg}</span>}
+            {msg && <span className="text-sm text-stone-400">{msg}</span>}
           </div>
         </>
       ) : (
-        <pre className="whitespace-pre-wrap rounded bg-neutral-900 p-3 font-mono text-sm">
+        <pre className="whitespace-pre-wrap rounded-xl bg-stone-900 p-3 font-mono text-sm">
           {dossier.content.resumen ?? ""}
         </pre>
       )}

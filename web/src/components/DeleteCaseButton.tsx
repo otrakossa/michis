@@ -18,7 +18,7 @@ export function DeleteCaseButton({ caseId }: { caseId: string }) {
   }
 
   return (
-    <button onClick={onClick} className="rounded border border-red-900 px-3 py-2 text-sm text-red-400">
+    <button onClick={onClick} className="btn-danger">
       Eliminar caso
     </button>
   );
