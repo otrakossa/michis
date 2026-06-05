@@ -26,7 +26,7 @@ export default async function ExpedientesPage() {
             id: string; handle: string; platform: string; risk_score: number | null;
           };
           return (
-            <li key={d.id} className="flex items-center justify-between gap-4 rounded border border-neutral-800 p-3">
+            <li key={d.id} className="card flex items-center justify-between gap-4">
               <div className="text-sm">
                 <Link href={`/casos/${caso.id}`} className="font-mono underline">
                   @{caso.handle}

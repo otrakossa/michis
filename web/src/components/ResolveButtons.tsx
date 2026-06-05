@@ -25,11 +25,11 @@ export function ResolveButtons({ dossierId }: { dossierId: string }) {
   return (
     <div className="flex items-center gap-2">
       <button onClick={() => resolver("aprobar")} disabled={busy}
-        className="rounded bg-emerald-600 px-3 py-1.5 text-sm font-medium disabled:opacity-50">
+        className="btn-primary">
         Aprobar
       </button>
       <button onClick={() => resolver("devolver")} disabled={busy}
-        className="rounded border border-amber-800 px-3 py-1.5 text-sm text-amber-400 disabled:opacity-50">
+        className="btn-ghost text-orange-400">
         Devolver
       </button>
       {msg && <span className="text-xs text-red-400">{msg}</span>}

@@ -34,7 +34,7 @@ export function YaReporteButton({ campaignId }: { campaignId: string }) {
   return (
     <div className="flex items-center gap-3">
       <button onClick={onClick} disabled={busy}
-        className="rounded bg-emerald-600 px-4 py-2 font-medium disabled:opacity-50">
+        className="btn-primary px-6 py-3 text-base">
         ✋ Ya reporté
       </button>
       {msg && <span className="text-sm text-neutral-400">{msg}</span>}

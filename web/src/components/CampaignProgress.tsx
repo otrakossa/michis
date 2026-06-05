@@ -28,15 +28,15 @@ export function CampaignProgress({ campaignId, active }: { campaignId: string; a
     return () => clearInterval(t);
   }, [load, active]);
 
-  if (!data) return <p className="text-sm text-neutral-500">Cargando progreso…</p>;
+  if (!data) return <p className="text-sm text-stone-500">Cargando progreso…</p>;
   const pct = data.total > 0 ? Math.round((data.reportes / data.total) * 100) : 0;
 
   return (
     <div className="flex flex-col gap-1">
-      <div className="h-2 w-full overflow-hidden rounded bg-neutral-800">
-        <div className="h-full bg-emerald-600 transition-all" style={{ width: `${pct}%` }} />
+      <div className="h-3 w-full overflow-hidden rounded-full bg-stone-700">
+        <div className="h-full bg-gradient-to-r from-amber-500 to-orange-400 transition-all" style={{ width: `${pct}%` }} />
       </div>
-      <p className="text-sm text-neutral-400">
+      <p className="text-sm text-stone-300">
         {data.reportes} / {data.total} ya reportaron{mine ? " · tú ya reportaste ✓" : ""}
       </p>
     </div>
