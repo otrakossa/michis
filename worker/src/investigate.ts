@@ -113,6 +113,27 @@ export async function runInvestigation(
     confidence: CONFIANZA_NUM[v.confianza] ?? 0.3,
   }).eq("id", case_id)).error);
 
+  // Expediente: upsert del borrador desde el veredicto (no se pisa trabajo humano).
+  const dossierContent = {
+    resumen: v.resumen,
+    score: v.score,
+    confianza: v.confianza,
+    senales: v.senales,
+    modo_degradado: v.modo_degradado,
+    parcial: v.parcial ?? false,
+  };
+  const { data: existingDossier } = await supabase
+    .from("dossiers").select("id, status, version").eq("case_id", case_id).maybeSingle();
+  if (!existingDossier) {
+    check((await supabase.from("dossiers")
+      .insert({ case_id, content: dossierContent })).error);
+  } else if (existingDossier.status === "draft") {
+    check((await supabase.from("dossiers")
+      .update({ content: dossierContent, version: existingDossier.version + 1 })
+      .eq("id", existingDossier.id)).error);
+  }
+  // listo_admin / approved: no tocar.
+
   // Aristas del grafo: solo vinculadas que ya existen como caso (sin recursión en Fase 1).
   for (const cv of v.cuentas_vinculadas ?? []) {
     const { data: target } = await supabase
