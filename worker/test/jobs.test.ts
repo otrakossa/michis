@@ -10,12 +10,12 @@ describe("cola de jobs", () => {
     await supabase.from("jobs").delete().eq("type", "test");
   });
 
-  it("devuelve null cuando no hay jobs pendientes", async () => {
+  it("devuelve null exacto con la cola TOTALMENTE vacía (bug de producción)", async () => {
+    // Con la cola vacía, PostgREST serializa el NULL compuesto de claim_job
+    // como objeto con campos null; claimNextJob debe tratarlo como null.
+    await supabase.from("jobs").delete().eq("status", "pending");
     const job = await claimNextJob();
-    // Puede haber otros jobs reales; este test asume cola vacía de tipo test.
-    // Si devuelve algo, debe no ser de tipo 'test'.
-    if (job) expect(job.type).not.toBe("test");
-    else expect(job).toBeNull();
+    expect(job).toBeNull();
   });
 
   it("reclama un job pendiente y lo marca como done al completar", async () => {

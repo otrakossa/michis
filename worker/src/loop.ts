@@ -20,9 +20,15 @@ export async function tick(): Promise<boolean> {
 }
 
 // Bucle infinito: procesa jobs; si no hay, duerme `intervalMs`.
+// Un error transitorio (red, BD) NO debe matar el worker: se loguea y se sigue.
 export async function runLoop(intervalMs: number, shouldStop = () => false): Promise<void> {
   while (!shouldStop()) {
-    const processed = await tick();
+    let processed = false;
+    try {
+      processed = await tick();
+    } catch (err) {
+      console.error("[worker] error en tick (se reintenta):", err);
+    }
     if (!processed) {
       await new Promise((r) => setTimeout(r, intervalMs));
     }

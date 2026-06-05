@@ -11,8 +11,11 @@ export interface Job {
 export async function claimNextJob(): Promise<Job | null> {
   const { data, error } = await supabase.rpc("claim_job");
   if (error) throw error;
-  // claim_job devuelve una fila o null
-  return (data as Job | null) ?? null;
+  // Cola vacía: PostgREST serializa el NULL compuesto de claim_job como un
+  // objeto con todos los campos en null — tratarlo como "no hay job".
+  const job = data as Job | null;
+  if (!job || !job.id) return null;
+  return job;
 }
 
 export async function completeJob(id: string): Promise<void> {
