@@ -17,6 +17,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <nav className="flex items-center gap-4">
           <span className="font-semibold">michis</span>
           <a href="/casos" className="text-sm text-neutral-300 hover:text-white">Casos</a>
+          {role === "admin" && (
+            <a href="/expedientes" className="text-sm text-neutral-300 hover:text-white">Expedientes</a>
+          )}
         </nav>
         <span className="text-sm text-neutral-400">
           {profile?.display_name ?? user.email} · {role}

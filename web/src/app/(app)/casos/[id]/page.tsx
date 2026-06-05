@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { RoleGate, type Role } from "@/components/RoleGate";
 import { InvestigateButton } from "@/components/InvestigateButton";
 import { DeleteCaseButton } from "@/components/DeleteCaseButton";
+import { VerdictView, type VerdictData } from "@/components/VerdictView";
+import { DossierPanel, type DossierData } from "@/components/DossierPanel";
 
 export default async function CasoDetallePage({
   params,
@@ -24,6 +26,12 @@ export default async function CasoDetallePage({
     .select("id, status, verdict, created_at, finished_at")
     .eq("case_id", id)
     .order("created_at", { ascending: false });
+
+  const { data: dossier } = await supabase
+    .from("dossiers")
+    .select("id, status, version, content, submitted_at")
+    .eq("case_id", id)
+    .maybeSingle();
 
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase
@@ -53,6 +61,15 @@ export default async function CasoDetallePage({
       )}
 
       <InvestigateButton caseId={caso.id} />
+
+      {runs && runs.length > 0 && runs[0].verdict != null && (
+        <div>
+          <h2 className="mb-2 text-sm font-medium text-neutral-400">Veredicto del agente</h2>
+          <VerdictView verdict={runs[0].verdict as VerdictData} />
+        </div>
+      )}
+
+      {dossier && <DossierPanel dossier={dossier as DossierData} />}
 
       <div>
         <h2 className="mb-2 text-sm font-medium text-neutral-400">Investigaciones</h2>
