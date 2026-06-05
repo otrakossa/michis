@@ -6,3 +6,9 @@ dist/
 *.log
 supabase/.branches/
 supabase/.temp/
+
+# Artefactos generados (Next.js / next-pwa / tsc incremental)
+next-env.d.ts
+*.tsbuildinfo
+web/public/sw.js
+web/public/workbox-*.js
