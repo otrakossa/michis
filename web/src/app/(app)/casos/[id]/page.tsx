@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { RoleGate, type Role } from "@/components/RoleGate";
@@ -5,6 +6,7 @@ import { InvestigateButton } from "@/components/InvestigateButton";
 import { DeleteCaseButton } from "@/components/DeleteCaseButton";
 import { VerdictView, type VerdictData } from "@/components/VerdictView";
 import { DossierPanel, type DossierData } from "@/components/DossierPanel";
+import { ActivateCampaignButton } from "@/components/ActivateCampaignButton";
 
 export default async function CasoDetallePage({
   params,
@@ -32,6 +34,10 @@ export default async function CasoDetallePage({
     .select("id, status, version, content, submitted_at")
     .eq("case_id", id)
     .maybeSingle();
+
+  const { data: activeCampaign } = await supabase
+    .from("denuncia_campaigns")
+    .select("id").eq("case_id", id).eq("status", "active").maybeSingle();
 
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = await supabase
@@ -70,6 +76,18 @@ export default async function CasoDetallePage({
       )}
 
       {dossier && <DossierPanel dossier={dossier as DossierData} />}
+
+      {caso.status === "confirmado" &&
+        (activeCampaign ? (
+          <Link href={`/campanias/${activeCampaign.id}`}
+            className="w-fit rounded border border-emerald-800 px-3 py-2 text-sm text-emerald-400">
+            📢 Ver campaña activa →
+          </Link>
+        ) : (
+          <RoleGate role={role} allow={["admin"]}>
+            <ActivateCampaignButton caseId={caso.id} />
+          </RoleGate>
+        ))}
 
       <div>
         <h2 className="mb-2 text-sm font-medium text-neutral-400">Investigaciones</h2>

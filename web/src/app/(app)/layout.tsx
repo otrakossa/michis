@@ -11,12 +11,25 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .from("profiles").select("role, display_name").eq("id", user.id).single();
   const role: Role = (profile?.role as Role) ?? "activista";
 
+  const { count: campActivas } = await supabase
+    .from("denuncia_campaigns")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active");
+
   return (
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-neutral-800 p-4">
         <nav className="flex items-center gap-4">
           <span className="font-semibold">michis</span>
           <a href="/casos" className="text-sm text-neutral-300 hover:text-white">Casos</a>
+          <a href="/campanias" className="text-sm text-neutral-300 hover:text-white">
+            Campañas
+            {(campActivas ?? 0) > 0 && (
+              <span className="ml-1 rounded-full bg-emerald-600 px-1.5 text-xs font-medium">
+                {campActivas}
+              </span>
+            )}
+          </a>
           {role === "admin" && (
             <a href="/expedientes" className="text-sm text-neutral-300 hover:text-white">Expedientes</a>
           )}
