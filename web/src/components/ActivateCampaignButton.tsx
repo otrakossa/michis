@@ -13,6 +13,10 @@ export function ActivateCampaignButton({ caseId }: { caseId: string }) {
   const [busy, setBusy] = useState(false);
 
   async function activar() {
+    if (!/^https?:\/\//i.test(url)) {
+      setMsg("La URL de reporte debe empezar con http:// o https://");
+      return;
+    }
     setBusy(true);
     setMsg(null);
     const supabase = createClient();

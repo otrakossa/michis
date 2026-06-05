@@ -158,3 +158,15 @@ describe("cerrar_campania", () => {
     expect(error!.message).toMatch(/activa/);
   });
 });
+
+describe("validación de URL de reporte (anti-XSS)", () => {
+  it("rechaza URLs que no sean http(s)", async () => {
+    const { error } = await adm.rpc("activar_campania", {
+      p_case_id: confirmedCaseId,
+      p_instructions: "x",
+      p_report_url: "javascript:alert(1)",
+    });
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/http/);
+  });
+});

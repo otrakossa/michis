@@ -60,12 +60,17 @@ export default async function CampaniaDetallePage({
 
       {activa && (
         <div className="flex flex-col gap-3">
-          {camp.report_links?.url && (
-            <a href={camp.report_links.url} target="_blank" rel="noopener noreferrer"
-              className="w-fit rounded border border-neutral-700 px-4 py-2 text-sm">
-              🔗 Abrir mecanismo de reporte
-            </a>
-          )}
+          {(() => {
+            // Guard en el sink: solo http(s); una URL javascript: sería XSS.
+            const url = camp.report_links?.url;
+            const safeUrl = url && /^https?:\/\//i.test(url) ? url : null;
+            return safeUrl ? (
+              <a href={safeUrl} target="_blank" rel="noopener noreferrer"
+                className="w-fit rounded border border-neutral-700 px-4 py-2 text-sm">
+                🔗 Abrir mecanismo de reporte
+              </a>
+            ) : null;
+          })()}
           <YaReporteButton campaignId={camp.id} />
         </div>
       )}
