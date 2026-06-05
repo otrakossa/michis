@@ -12,3 +12,4 @@ next-env.d.ts
 *.tsbuildinfo
 web/public/sw.js
 web/public/workbox-*.js
+.superpowers/
