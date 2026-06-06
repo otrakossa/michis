@@ -2,6 +2,7 @@ import { supabase } from "./supabase.js";
 import { registerHandler } from "./handlers.js";
 import { config } from "./config.js";
 import { AnthropicLlm, type LlmClient } from "./agent/llm.js";
+import { OpenAiCompatLlm } from "./agent/llmOpenAiCompat.js";
 import { MockXClient } from "./agent/xclient.js";
 import { runAgent } from "./agent/runtime.js";
 import { buildSystemPrompt, buildUserMessage } from "./agent/prompt.js";
@@ -19,9 +20,15 @@ export interface InvestigateDeps {
 }
 
 function defaultDeps(): InvestigateDeps {
-  return {
-    llm: config.anthropicApiKey ? new AnthropicLlm(config.anthropicApiKey) : null,
-  };
+  // Prioridad: Claude (Anthropic) → proveedor compatible-OpenAI (Gemini compat,
+  // Ollama, Groq…) → null (stub, degradación elegante).
+  if (config.anthropicApiKey) {
+    return { llm: new AnthropicLlm(config.anthropicApiKey) };
+  }
+  if (config.llmApiKey && config.llmBaseUrl) {
+    return { llm: new OpenAiCompatLlm(config.llmBaseUrl, config.llmApiKey, config.llmModel) };
+  }
+  return { llm: null };
 }
 
 function check(error: { message: string } | null): void {
@@ -67,7 +74,12 @@ export async function runInvestigation(
     buildSystemPrompt(),
     buildUserMessage(caso!),
     tools,
-    { maxIterations: config.agentMaxIterations, budgetUsd: config.agentBudgetUsd },
+    {
+      maxIterations: config.agentMaxIterations,
+      budgetUsd: config.agentBudgetUsd,
+      inputUsdPerM: config.llmInputUsdPerM,
+      outputUsdPerM: config.llmOutputUsdPerM,
+    },
   );
 
   // Auditoría: un agent_step por vuelta.

@@ -21,11 +21,18 @@ export function finalizarTool(): AgentTool {
     description:
       "Termina la investigación entregando el veredicto final. DEBES llamarla cuando tengas " +
       "suficiente evidencia o cuando se te indique cerrar. Sé riguroso: señales con peso " +
-      "honesto; si la evidencia es débil, score bajo y confianza baja.",
+      "honesto; si la evidencia es débil, score bajo y confianza baja. IMPORTANTE: score es " +
+      "un ENTERO de 0 a 100 (probabilidad porcentual de cuenta sintética). NUNCA uses escala " +
+      "0-5 ni 0-10: una cuenta muy sospechosa es ~85, no 4.5.",
     input_schema: {
       type: "object",
       properties: {
-        score: { type: "number", minimum: 0, maximum: 100 },
+        score: {
+          type: "number",
+          minimum: 0,
+          maximum: 100,
+          description: "entero 0-100: probabilidad porcentual de cuenta sintética",
+        },
         confianza: { enum: ["baja", "media", "alta"] },
         senales: {
           type: "array",

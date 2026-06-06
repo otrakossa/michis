@@ -1,17 +1,19 @@
-// Precios de claude-sonnet-4-6 en USD por millón de tokens.
-const INPUT_USD_PER_M = 3;
-const OUTPUT_USD_PER_M = 15;
-
+// Contador de gasto del agente. Defaults: precios de claude-sonnet-4-6 en USD
+// por millón de tokens; configurables por proveedor (0 para tiers gratuitos).
 export class Budget {
   private spent = 0;
   private tokens = 0;
 
-  constructor(private readonly limitUsd: number) {}
+  constructor(
+    private readonly limitUsd: number,
+    private readonly inputUsdPerM = 3,
+    private readonly outputUsdPerM = 15,
+  ) {}
 
   add(inputTokens: number, outputTokens: number): void {
     this.tokens += inputTokens + outputTokens;
     this.spent +=
-      (inputTokens * INPUT_USD_PER_M + outputTokens * OUTPUT_USD_PER_M) / 1_000_000;
+      (inputTokens * this.inputUsdPerM + outputTokens * this.outputUsdPerM) / 1_000_000;
   }
 
   get costUsd(): number {

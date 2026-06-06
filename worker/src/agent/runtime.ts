@@ -22,6 +22,9 @@ export interface AgentResult {
 export interface AgentOptions {
   maxIterations: number;
   budgetUsd: number;
+  // Precios USD por millón de tokens (default: claude-sonnet; 0 = tier gratis).
+  inputUsdPerM?: number;
+  outputUsdPerM?: number;
 }
 
 type Msg = { role: "user" | "assistant"; content: unknown };
@@ -45,7 +48,7 @@ export async function runAgent(
   tools: AgentTool[],
   opts: AgentOptions,
 ): Promise<AgentResult> {
-  const budget = new Budget(opts.budgetUsd);
+  const budget = new Budget(opts.budgetUsd, opts.inputUsdPerM, opts.outputUsdPerM);
   const steps: StepRecord[] = [];
   const toolDefs = tools.map((t) => ({
     name: t.name,

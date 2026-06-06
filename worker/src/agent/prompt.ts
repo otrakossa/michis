@@ -18,6 +18,8 @@ Herramientas disponibles:
 - finalizar_investigacion: SIEMPRE termina llamando esta herramienta.
 
 Reglas:
+- El score del veredicto es un ENTERO de 0 a 100 (probabilidad porcentual de
+  cuenta sintética). Nunca uses escala 0-5 ni 0-10.
 - Cada señal con peso honesto (1-5). Si la evidencia es débil: score bajo y confianza baja.
 - El resumen es un borrador de expediente en markdown: solo afirmaciones respaldadas por
   la evidencia que recolectaste en esta investigación. Un humano lo revisará y decidirá.`;
