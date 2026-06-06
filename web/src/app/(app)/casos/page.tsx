@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ESTADO_CASO, etiquetaEstado } from "@/lib/estados";
+import { StatusPill } from "@/components/StatusPill";
+import { ScoreBadge } from "@/components/ScoreBadge";
+import { PlatformBadge } from "@/components/PlatformBadge";
+import { EmptyState } from "@/components/EmptyState";
 
 const ESTADOS = ["nuevo", "investigando", "needs_review", "confirmado", "descartado"] as const;
 
@@ -14,7 +18,7 @@ export default async function CasosPage({
 
   let query = supabase
     .from("cases")
-    .select("id, handle, platform, status, created_at")
+    .select("id, handle, platform, status, created_at, risk_score")
     .order("created_at", { ascending: false });
   if (estado && (ESTADOS as readonly string[]).includes(estado)) {
     query = query.eq("status", estado);
@@ -48,24 +52,36 @@ export default async function CasosPage({
         ))}
       </nav>
 
-      <ul className="flex flex-col gap-2">
-        {(casos ?? []).map((c) => (
-          <li key={c.id}>
-            <Link
-              href={`/casos/${c.id}`}
-              className="card flex items-center justify-between hover:ring-1 hover:ring-amber-500/50"
-            >
-              <span className="font-mono">@{c.handle}</span>
-              <span className="text-sm text-stone-400">
-                {c.platform} · {etiquetaEstado(ESTADO_CASO, c.status)}
-              </span>
+      {(casos ?? []).length === 0 ? (
+        <EmptyState
+          emoji="🐱"
+          titulo="Ningún caso todavía"
+          texto="¿Viste algo raro en redes? Carga la primera cuenta sospechosa."
+          action={
+            <Link className="btn-primary" href="/casos/nuevo">
+              + Nuevo caso
             </Link>
-          </li>
-        ))}
-        {(casos ?? []).length === 0 && (
-          <li className="text-stone-500">No hay casos{estado ? ` en estado "${estado}"` : ""}.</li>
-        )}
-      </ul>
+          }
+        />
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {(casos ?? []).map((c) => (
+            <li key={c.id}>
+              <Link
+                href={`/casos/${c.id}`}
+                className="card flex items-center justify-between hover:ring-1 hover:ring-amber-500/50"
+              >
+                <span className="font-mono">@{c.handle}</span>
+                <span className="flex items-center gap-2">
+                  <PlatformBadge plataforma={c.platform as "X" | "TikTok"} />
+                  <ScoreBadge score={c.risk_score ?? undefined} />
+                  <StatusPill mapa="caso" estado={c.status} />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

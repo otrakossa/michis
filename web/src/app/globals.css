@@ -10,3 +10,8 @@
   .chip { @apply rounded-full bg-stone-900 px-3 py-1 text-xs text-stone-200; }
   .badge-accion { @apply rounded-full bg-amber-500 px-2 py-0.5 text-xs font-extrabold text-stone-900; }
 }
+
+@keyframes shimmer { 0% { opacity: .45 } 50% { opacity: .8 } 100% { opacity: .45 } }
+.shimmer { background: #292524; animation: shimmer 1.4s ease-in-out infinite; }
+@keyframes pulse-soft { 0%,100% { opacity: 1 } 50% { opacity: .4 } }
+.pulse-soft { animation: pulse-soft 1.6s ease-in-out infinite; }
