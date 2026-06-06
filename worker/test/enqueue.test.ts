@@ -17,9 +17,21 @@ async function deleteUserByEmail(email: string) {
 }
 
 async function cleanTestData() {
-  // borra casos de prueba (runs caen por cascade) y jobs investigate pendientes
+  // BD compartida: borrar SOLO los jobs de los casos de prueba (jamás los
+  // reales — ya nos comimos un job de producción por un delete amplio).
+  const { data: testCases } = await svc
+    .from("cases").select("id").like("handle", "test-enq%");
+  const testIds = new Set((testCases ?? []).map((c) => c.id));
+  if (testIds.size > 0) {
+    const { data: jobs } = await svc
+      .from("jobs").select("id, payload").eq("type", "investigate").eq("status", "pending");
+    const aBorrar = (jobs ?? [])
+      .filter((j) => testIds.has((j.payload as { case_id?: string })?.case_id ?? ""))
+      .map((j) => j.id);
+    if (aBorrar.length > 0) await svc.from("jobs").delete().in("id", aBorrar);
+  }
+  // casos de prueba (runs caen por cascade)
   await svc.from("cases").delete().like("handle", "test-enq%");
-  await svc.from("jobs").delete().eq("type", "investigate").eq("status", "pending");
 }
 
 beforeAll(async () => {

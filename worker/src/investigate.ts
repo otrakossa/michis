@@ -69,18 +69,30 @@ export async function runInvestigation(
   check(caseErr);
 
   const tools = [perfilXTool(new MockXClient()), similitudTool(case_id), finalizarTool()];
-  const result = await runAgent(
-    deps.llm,
-    buildSystemPrompt(),
-    buildUserMessage(caso!),
-    tools,
-    {
-      maxIterations: config.agentMaxIterations,
-      budgetUsd: config.agentBudgetUsd,
-      inputUsdPerM: config.llmInputUsdPerM,
-      outputUsdPerM: config.llmOutputUsdPerM,
-    },
-  );
+  let result;
+  try {
+    result = await runAgent(
+      deps.llm,
+      buildSystemPrompt(),
+      buildUserMessage(caso!),
+      tools,
+      {
+        maxIterations: config.agentMaxIterations,
+        budgetUsd: config.agentBudgetUsd,
+        inputUsdPerM: config.llmInputUsdPerM,
+        outputUsdPerM: config.llmOutputUsdPerM,
+      },
+    );
+  } catch (err) {
+    // El agente falló (LLM caído, etc.): la corrida y el caso NO pueden quedar
+    // atascados en "investigando" para siempre. Se marca el fallo y el caso
+    // vuelve a estado accionable para reintentar.
+    await supabase.from("investigation_runs")
+      .update({ status: "failed", finished_at: new Date().toISOString() })
+      .eq("id", run_id);
+    await supabase.from("cases").update({ status: "nuevo" }).eq("id", case_id);
+    throw err; // tick() lo registra en jobs.last_error
+  }
 
   // Auditoría: un agent_step por vuelta.
   check((await supabase.from("agent_steps").insert(

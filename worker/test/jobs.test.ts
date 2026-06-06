@@ -13,9 +13,24 @@ describe("cola de jobs", () => {
   it("devuelve null exacto con la cola TOTALMENTE vacía (bug de producción)", async () => {
     // Con la cola vacía, PostgREST serializa el NULL compuesto de claim_job
     // como objeto con campos null; claimNextJob debe tratarlo como null.
-    await supabase.from("jobs").delete().eq("status", "pending");
-    const job = await claimNextJob();
-    expect(job).toBeNull();
+    // BD compartida: NO se borran jobs reales — se POSPONEN (run_after futuro,
+    // claim_job no los ve) y se restauran al final.
+    const { data: pendientes } = await supabase
+      .from("jobs").select("id").eq("status", "pending");
+    const ids = (pendientes ?? []).map((j) => j.id);
+    const futuro = new Date(Date.now() + 3600_000).toISOString();
+    if (ids.length > 0) {
+      await supabase.from("jobs").update({ run_after: futuro }).in("id", ids);
+    }
+    try {
+      const job = await claimNextJob();
+      expect(job).toBeNull();
+    } finally {
+      if (ids.length > 0) {
+        await supabase.from("jobs")
+          .update({ run_after: new Date().toISOString() }).in("id", ids);
+      }
+    }
   });
 
   it("reclama un job pendiente y lo marca como done al completar", async () => {
