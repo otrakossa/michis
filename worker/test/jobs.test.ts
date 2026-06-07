@@ -63,19 +63,36 @@ describe("tick", () => {
   it("procesa un job con handler registrado y lo deja done", async () => {
     let ran = false;
     registerHandler("e2e", async () => { ran = true; });
-    const { data: inserted } = await supabase
-      .from("jobs").insert({ type: "e2e", payload: {} }).select("id").single();
 
-    // Procesa hasta que nuestro job e2e quede done (la cola puede tener otros jobs).
-    for (let i = 0; i < 15; i++) {
-      const { data } = await supabase.from("jobs").select("status").eq("id", inserted!.id).single();
-      if (data!.status === "done") break;
-      const processed = await tick();
-      if (!processed) break;
+    // BD compartida: tick() reclamaría jobs REALES (sin handler aquí → los
+    // marcaría failed). Posponer los pendientes ajenos y restaurarlos al final.
+    const { data: pendientes } = await supabase
+      .from("jobs").select("id").eq("status", "pending");
+    const ajenos = (pendientes ?? []).map((j) => j.id);
+    const futuro = new Date(Date.now() + 3600_000).toISOString();
+    if (ajenos.length > 0) {
+      await supabase.from("jobs").update({ run_after: futuro }).in("id", ajenos);
     }
 
-    const { data } = await supabase.from("jobs").select("status").eq("id", inserted!.id).single();
-    expect(data!.status).toBe("done");
-    expect(ran).toBe(true);
+    try {
+      const { data: inserted } = await supabase
+        .from("jobs").insert({ type: "e2e", payload: {} }).select("id").single();
+
+      for (let i = 0; i < 15; i++) {
+        const { data } = await supabase.from("jobs").select("status").eq("id", inserted!.id).single();
+        if (data!.status === "done") break;
+        const processed = await tick();
+        if (!processed) break;
+      }
+
+      const { data } = await supabase.from("jobs").select("status").eq("id", inserted!.id).single();
+      expect(data!.status).toBe("done");
+      expect(ran).toBe(true);
+    } finally {
+      if (ajenos.length > 0) {
+        await supabase.from("jobs")
+          .update({ run_after: new Date().toISOString() }).in("id", ajenos);
+      }
+    }
   });
 });
